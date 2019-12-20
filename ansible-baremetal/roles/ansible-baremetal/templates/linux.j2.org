@@ -1,0 +1,16 @@
+hostname: {{ ansible_hostname | to_nice_json }}
+distribution: {{ ansible_distribution | to_nice_json }}
+ip: {{ ansible_default_ipv4.address }}
+cpu_socket: {{ ansible_processor_cores }}
+cpu_count: {{ ansible_processor_count }}
+{% for mem in free_mem.stdout_lines %}
+mem: {{ mem }}Gb
+{% endfor %}
+{% for disk in internal_disk_size.stdout_lines %}
+disk: {{ disk }}Gb
+{% endfor %}
+ipv4_default: {{ ansible_default_ipv4.address }}
+product_name: {{ ansible_product_name }}
+vendor_name: {{ ansible_system_vendor }}
+system: {{ ansible_os_family }}
+serial: {{ serial_number.stdout }}

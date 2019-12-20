@@ -1,0 +1,74 @@
+---
+
+- name: Pre-configure infra nodes for the provisioning of bare-metal 1
+  hosts: 192.168.0.166
+  gather_facts: no
+
+  tasks:
+  - name: Creating a Mac address, this script execute using racadm 
+    block:
+      - name: Save a hosts variables 
+        shell: /var/lib/awx/projects/kolon/variables_ansible.sh
+
+- name: Pre-configure infra nodes for the provisioning of bare-metal 2
+  hosts: all
+  tasks:
+      - name: Copy dell.yml from local to cobbler
+        copy: 
+          src: /var/lib/awx/projects/kolon/dell.yml
+          dest: /root/dell.yml
+
+- name: Pre-configure infra nodes for the provisioning of bare-metal 3
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - dell.yml
+
+  tasks:
+  - name: Creating a system, the name and profile for cobbler system
+    block:
+      - name: excute remote shell
+        shell: /root/re.sh
+
+      - name: Setup a multi-node in clobber, multi variable is in tower node(ex. hosts) 
+        command: cobbler system add --name={{ item.HOST_NAME }} --mac={{ item.DHCP_MAC }} --ip-address={{ item.DHCP_IP }} --netmask=255.255.255.0 --if-gateway=192.168.0.100 --profile={{ OS_NAME }} --interface=ens192 --static=True --hostname={{ item.HOST_NAME }}
+        loop: "{{ hosts }}"
+        register: result
+
+      - name: cobbler register variable debug
+        debug: msg={{ item.item.DHCP_IP }}
+        with_items: "{{ result.results }}"
+
+      - name: add host for multi node 
+        add_host:
+          name: "{{ item.item.DHCP_IP }}"
+          group: created_new
+        with_items: "{{result.results }}"
+
+      - name: wait for ssh 
+        wait_for: 
+          host: "{{ item.item.DHCP_IP }}"
+          port: 22 
+          state: started 
+          search_regex: OpenSSH
+          delay: 50
+          timeout: 1200
+        with_items: "{{result.results }}"
+        connection: local
+        ignore_errors: yes
+
+- name: configure multi node 
+  hosts: created_new
+  tasks:
+
+  - name: wait for multi-node port
+    pause: seconds=60
+
+  - name: wait for ssh created_new
+    wait_for_connection:
+      timeout: 300 
+    connection: local
+    ignore_errors: yes
+
+  - name: make hostname in the system log
+    shell: logger `hostname`
