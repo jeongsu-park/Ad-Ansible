@@ -1,0 +1,51 @@
+---
+
+- name: Check host accessibility
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - password_file.txt
+
+  tasks:
+    - block:
+        - command: echo "Chekcing ping"
+
+        - assert:
+            that:
+              - ansible_play_hosts == ansible_play_hosts_all
+
+      rescue:
+        - name: Sending an e-mail using Gmail SMTP servers
+          mail:
+            host: smtp.gmail.com
+            port: 465
+            username: jparks4056@gmail.com
+            password: "{{ password }}"
+            to: jeong su <jparks4056@gmail.com>
+            subject: Host check- {{ (ansible_play_hosts_all | difference(ansible_play_hosts)) }}
+            secure: starttls
+            timeout: 60
+            body: Can not login into the machine, Host check- {{ (ansible_play_hosts_all | difference(ansible_play_hosts )) }}
+          when: inventory_hostname == "localhost"
+
+
+    - block:
+        - command: systemctl status rsyslog
+          register: rsyslog_result
+
+        - assert:
+            that:
+              - rsyslog_result.rc != 0
+
+      rescue:
+        - name: Sending an e-mail using Gmail SMTP servers
+          mail:
+            host: smtp.gmail.com
+            port: 465
+            username: jparks4056@gmail.com
+            password: "{{ password }}"
+            to: jeong su <jparks4056@gmail.com>
+            subject: Rsyslog check- {{ ansible_play_hosts }} failed rsyslog
+            secure: starttls
+            body: Rsyslog check- {{ ansible_play_hosts }} failed rsyslog
+          when: inventory_hostname == "localhost"

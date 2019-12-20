@@ -1,0 +1,73 @@
+---
+- name: docker container test
+  hosts: localhost
+  tasks:
+ 
+  - name: install docker and ansible package
+    yum:
+      name: "{{ item }}"
+      state: present
+    with_items:
+    - docker
+    - device-mapper-libs
+    - device-mapper-event-libs
+    - ansible
+
+  - name: define inventory
+    lineinfile:
+      dest: /etc/ansible/ansible.cfg
+      regexp: '^#inventory'
+      line: 'inventory = /etc/ansible/hosts'
+
+  - name: install pip install
+    yum:
+      name: python-pip
+      state: present
+
+  - name: install docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: install docker pip
+    pip:
+      name: docker-py
+      state: present
+
+  - name: Create a mysql container
+    docker_container:
+      name: mariadb
+      image: mariadb:latest
+      volumes:
+        - /root/mysql:/var/lib/mysql
+      state: started
+ # recreate: yes
+      ports:
+        - "3306:3306"
+      env: "MYSQL_ALLOW_EMPTY_PASSWORD=true"
+
+  - name: wait for mysql to start
+    wait_for: port=3306 state=started
+
+  - name: wait for pause
+    pause: seconds=90 
+
+  - name: Create wordpress user on mysql container
+    shell: mysql -uroot -h127.0.0.1 -e "create database wp CHARACTER SET utf8; grant all privileges on wp.* to wp@'%' identified by 'wp'; flush privileges;"
+
+  - name: Create a wordpress container
+    docker_container:
+      name: wordpress
+      image: wordpress:latest
+      state: started
+      links:
+        - "mariadb:mariadb"
+      ports:
+        - "8080:80"
+ # env:
+      env:
+        WORDPRESS_DB_HOST: mariadb
+        WORDPRESS_DB_NAME: wp
+        WORDPRESS_DB_USER: wp
+        WORDPRESS_DB_PASSWORD: wp

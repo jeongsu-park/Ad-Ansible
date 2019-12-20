@@ -1,0 +1,112 @@
+---
+- name: VM from template
+  #hosts: localhost
+  hosts: localhost
+#  hosts: all
+#  become: True
+#  gather_facts: false
+  connection: local
+  
+#  vars_files:
+#    - vmware_info.yml
+#    - vm_extra_vars.yml
+#  vars:
+#    notes: Created by Ansible
+#    dumpfacts: False
+#    vmware:
+#      hostname: '{{ lookup("env", "VMWARE_HOST") }}'
+#      username: '{{ lookup("env", "VMWARE_USER") }}'
+#      password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+
+  tasks:
+    - name: creat vm window
+      vmware_guest:
+        hostname: '{{ lookup("env", "VMWARE_HOST") }}'
+        username: '{{ lookup("env", "VMWARE_USER") }}'
+        password: '{{ lookup("env", "VMWARE_PASSWORD") }}'
+        #vcenter_hostname: 10.224.51.101
+        #datacenter: "{{ datacenter }}"
+        datacenter: DataCenter
+        #hostname: "{{ vcenter_host }}" 
+        #username: "{{ vcenter_user }}"
+        #password: "{{ vcenter_pass }}"
+        validate_certs: no
+        #datacenter: "{{ datacenter }}"
+        #cluster: "{{ vmcluster }}"
+        #template: Win2012R2_STD_KOR
+        #template: "{{ vmtemplate }}"
+        template: WIN2012R2_SYSPREP
+        #template: WIN2012R2_SYSPREP
+        #template: RHEL7
+        folder: /
+        state: poweredon
+        #state: present
+        #name: w2012r2_test7
+        #name: "{{ guestvmid }}"
+        name: win2012r2-test112
+        #name: rhel7-02
+        hardware:
+          memory_mb: 4096
+          num_cpus: 2
+          #num_cpus: "{{ vmcpu }}"
+          #num_cpus: "{{ vmcpu }}"
+          #scsi: paravirtual
+          scsi: lsilogicsas
+        disk:
+        #- size_gb: 110
+        - size_gb: 80
+          type: thin
+          #datastore: NEW-NFS10G01
+          datastore: datastore1
+        #- size_gb: "{{ disk2 }}"
+        - size_gb: 40
+          type: thin
+          datastore: datastore1
+          #datastore: NEW-NFS10G01
+        networks:
+        #- name: VMnet-10.224.50.x
+        #- name: DEV
+        - name: VM Network
+          #ip: 192.168.0.l80
+          #ip: "{{ vm_ip }}"
+          #ip: "{{ vm_ip }}"
+          ip: 192.168.0.155
+          netmask: 255.255.255.0
+          gateway: 192.168.0.2
+#          mac: 'aa:bb:dd:aa:00:14'
+          domain: corp.kolon.com
+          dns_servers:
+          - 168.126.63.1
+#        - name: VM Network00
+#          ip: 192.168.0.135
+          #ip: "{{ vmip }}" 
+#          netmask: 255.255.255.0
+#          gateway: 192.168.0.2
+#          mac: 'aa:bb:dd:aa:00:14'
+#          domain: 
+#          dns_servers:
+#          - 168.126.63.1
+#        customization:
+          #fullname: jparks7
+          #cumputername: win2012r2-test8
+          #orgname: ACME
+          #hostname: win2012r2-test2
+          #runonce:
+          #- powershell.exe Resize-Partition -DriveLetter C -Size (Get-PartitionSupportedSize -DriveLetter C).sizeMax
+          #- powershell.exe Resize-Partition -DriveLetter D -Size (Get-PartitionSupportedSize -DriveLetter D).sizeMax
+      register: result
+
+    - name: print result
+      debug: msg={{ result }}
+
+#    - name: save ip address for inventory import
+#      shell: echo "{{ vmip }}" > /tmp/"{{ vmip }}".txt
+
+#    - name: print template
+#      shell: echo "{{ vmtemplate }}"
+#      register: vmtemplate_stdout
+
+#    - name: print 1vmtemplate_stdout
+#      shell: awx-manage inventory_import --inventory-id=1 --source=/tmp/"{{ vmip }}".txt
+#      delegate_to: localhost
+#      when: vmtemplate_stdout.stdout.find('WIN') != -1

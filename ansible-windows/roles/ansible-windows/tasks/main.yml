@@ -1,0 +1,39 @@
+---
+- name: update windows patch
+  #hosts: "{{ vmname }}" 
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: search windows update
+      win_updates:
+        category_names: "{{ item }}"
+        reboot: yes
+        state: installed
+        log_path: c:/ansible_wu.txt
+      register: result
+      with_items:
+        - 'SecurityUpdates'
+        - 'CriticalUpdates'
+        - 'UpdateRollups'
+        - 'Application'
+        - 'DefinitionUpdates'
+
+    - name: print result
+      debug: msg={{ result }}
+
+    - name: update windows patch
+      #win_updates: category_names=SecurityUpdates
+      #win_updates: category_names=CriticalUpdates
+      win_updates: 
+      register: update_result
+
+    - name: reboot when needed 
+      win_reboot:
+        pre_reboot_delay: 15
+        shutdown_timeout: 15
+        reboot_timeout: 120
+      when: '(update_result.failed is defined and update_result.failed == True) or (update_result.reboot_required is defined and update_result.reboot_required) or (update_result.failed_updated_count is defined and update_result.failed_update_count > 0)'
+
+
+
+
