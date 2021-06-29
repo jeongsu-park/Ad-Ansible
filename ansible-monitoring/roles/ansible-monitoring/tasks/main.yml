@@ -30,6 +30,7 @@
 
 
     - block:
+            #    - block:
         - command: systemctl status rsyslog
           register: rsyslog_result
 
