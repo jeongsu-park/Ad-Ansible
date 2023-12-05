@@ -1,0 +1,5 @@
+metrics_graph_service: yes
+metrics_query_service: yes
+metrics_retention_days: 7
+metrics_monitored_hosts:  "{{ groups['servers'] }}"
+webhook_endpoint: "http://192.168.0.81:5000/endpoint"

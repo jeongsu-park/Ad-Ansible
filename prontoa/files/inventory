@@ -1,0 +1,20 @@
+localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python3"
+
+[all:vars]
+
+# AWX-Managed Database Settings
+# If left blank, these will be generated upon install.
+# Values are written out to tools/docker-compose/_sources/secrets/
+# pg_password=""
+# broadcast_websocket_secret=""
+# secret_key=""
+
+# External Database Settings
+pg_host="prontoa.iptime.org"
+pg_password="vmfhsxhdpdl1!"
+pg_port="55432"
+pg_username="awx"
+pg_hostname="prontoa.iptime.org"
+
+# awx_image="ghcr.io/ansible/awx_devel"
+# migrate_local_docker=false

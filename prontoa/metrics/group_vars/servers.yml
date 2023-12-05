@@ -1,0 +1,2 @@
+metrics_retention_days: 7
+metrics_manage_firewall: true

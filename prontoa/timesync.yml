@@ -1,0 +1,13 @@
+- hosts: all
+  become: true
+  vars:
+    timesync_ntp_servers:
+      - hostname: ntp1.example.com
+        iburst: yes
+      - hostname: ntp2.example.com
+        iburst: yes
+      - hostname: ntp3.example.com
+        iburst: yes
+  roles:
+    - redhat.rhel_system_roles.timesync
+

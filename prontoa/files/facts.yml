@@ -1,0 +1,52 @@
+---
+- hosts: all
+  tasks:
+
+  - name: Print all available facts
+    ansible.builtin.debug:
+      var: ansible_facts
+
+  - name: Print Just string
+    debug:
+      msg: ansible_facts
+
+  - name: Print the gateway for each host when defined
+    ansible.builtin.debug:
+      msg: System {{ inventory_hostname }} has gateway {{ ansible_default_ipv4.gateway }}
+    when: ansible_default_ipv4.gateway is defined
+
+  - name: Get uptime information
+    ansible.builtin.shell: /usr/bin/uptime
+    register: result
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: result
+      #verbosity: 2
+
+  - name: Display all variables/facts known for a host
+    ansible.builtin.debug:
+      var: hostvars[inventory_hostname]
+        #verbosity: 4
+        #verbosity: 2
+
+  - name: Display variables/facts known for a host
+    ansible.builtin.debug:
+      msg: "{{ ansible_facts['nodename'] }}"
+
+  - name: Display memory total
+    ansible.builtin.debug:
+      msg: "{{ ansible_facts['memtotal_mb'] }}"
+
+  - name: Display CPU Usage
+    ansible.builtin.shell: top -bn1 | grep load | awk '{printf "%.2f\n", $(NF-2)}'
+    register: result_cpu
+
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: result_cpu
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: result_cpu.stdout_lines

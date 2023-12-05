@@ -1,0 +1,9 @@
+all:
+  children:
+    servers:
+      hosts:
+        rhel9-server1:
+        rhel9-server2:
+    metrics_monitor:
+      hosts:
+        metrics_monitor:

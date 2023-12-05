@@ -1,0 +1,54 @@
+- name: Use metrics system role to configure PCP metrics recording
+  hosts: servers
+  roles: 
+    - redhat.rhel_system_roles.metrics
+
+- name: Use metrics system role to configure metrics_monitor system
+  hosts: metrics_monitor
+  roles: 
+    - redhat.rhel_system_roles.metrics
+
+- name: Enable PMIE configuration for webhooks
+  hosts: metrics_monitor
+  vars:
+    default_config: 
+      - "default"
+    server_list: "{{ groups['servers'] + default_config }}"
+  tasks:
+    - name: Check if global webhook_action is configured
+      lineinfile:
+        state: absent
+        path: /var/lib/pcp/config/pmie/config.{{ item }}
+        regexp: "//.*global webhook_action = yes"
+      check_mode: true
+      changed_when: false
+      register: global_webhook_action_status
+      loop: "{{ server_list }}"
+
+    - name: Configure global webhook_action
+      command: "pmieconf -f /var/lib/pcp/config/pmie/config.{{ item.item }} modify global webhook_action yes"
+      loop: "{{ global_webhook_action_status.results }}"
+      when: item.found == 0
+      notify: Restart pmie
+
+    - name: Check if global webhook_endpoint is configured
+      lineinfile:
+        state: absent
+        path: /var/lib/pcp/config/pmie/config.{{ item }}
+        regexp: "//.*global webhook_endpoint = \"{{ webhook_endpoint }}\""
+      check_mode: true
+      changed_when: false
+      register: global_webhook_endpoint_status
+      loop: "{{ server_list }}"
+
+    - name: Configure global webhook_endpoint
+      command: "pmieconf -f /var/lib/pcp/config/pmie/config.{{ item.item }} modify global webhook_endpoint {{ webhook_endpoint }}"
+      loop: "{{ global_webhook_endpoint_status.results }}"
+      when: item.found == 0
+      notify: Restart pmie
+
+  handlers:
+    - name: Restart pmie
+      service:
+        name: pmie
+        state: restarted
