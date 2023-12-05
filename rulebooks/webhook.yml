@@ -13,7 +13,7 @@
 
   rules:
     - name: Say Hello
-      condition: event.payload.message == "Ansible is super cool!"
+      condition: event.payload.message == "Ansible is super cool"
 
  ## Define the action we should take should the condition be met
 
