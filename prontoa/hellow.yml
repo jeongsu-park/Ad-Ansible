@@ -1,0 +1,6 @@
+- name: Welcome to ProntoA
+  hosts: all
+  tasks:
+    - name: Check if node connected
+      debug:
+        msg: Hello 
