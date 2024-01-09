@@ -14,12 +14,9 @@
       become: true
 
     - name: Opend Port 
-      shell: firewall-cmd --permanent --add-port=8080/tcp
+      shell: sudo firewall-cmd --zone=public --permanent --add-port=8080/tcp 
       become: true
 
-    - name: Start service firewalld, if not started
-      ansible.builtin.service:
-        name: firewalld
-        state: started
+    - name: Opend Port 
+      shell: sudo firewall-cmd --reload
       become: true
-
