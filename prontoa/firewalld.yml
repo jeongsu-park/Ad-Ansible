@@ -5,12 +5,15 @@
       ansible.builtin.yum:
         name: firewalld
         state: latest
+      become: true
 
     - name: Opend Port 
       shell: firewall-cmd --permanent --add-port=8080/tcp
+      become: true
 
     - name: Start service firewalld, if not started
       ansible.builtin.service:
         name: firewalld
         state: started
+      become: true
 
