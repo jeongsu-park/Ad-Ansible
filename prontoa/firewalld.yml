@@ -1,0 +1,16 @@
+- name: Welcome to ProntoA
+  hosts: all
+  tasks:
+    - name: Install the latest version of ProntoA
+      ansible.builtin.yum:
+        name: firewalld
+        state: latest
+
+    - name: Opend Port 
+      shell: firewall-cmd --permanent --add-port=8080/tcp
+
+    - name: Start service firewalld, if not started
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+
