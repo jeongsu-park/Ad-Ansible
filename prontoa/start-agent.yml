@@ -1,0 +1,5 @@
+- name: Starting to ProntoA
+  hosts: all
+  tasks:
+    - name: Started angent shell
+      shell: . /home/jparks7/start_agent.sh
