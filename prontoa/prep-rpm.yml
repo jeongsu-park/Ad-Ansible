@@ -13,14 +13,13 @@
         dest: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
         owner: jparks7
         group: jparks7
-      become: yes
 
-    - name: Started rpm files
-      ansible.builtin.dnf:
-        name: pa_metric_agent
-        state: absent
-      #become: True
-      ignore_errors: True
+        #    - name: Started rpm files
+        #ansible.builtin.dnf:
+        #name: pa_metric_agent
+        #state: absent
+        #become: True
+        #ignore_errors: True
 
     - name: Started rpm files
       ansible.builtin.dnf:
@@ -33,7 +32,6 @@
         src: /home/jparks7/pa_metric_agent.cfg.j2
         dest: /etc/prontoa/pa_metric_agent.cfg
         force: yes
-          #      become: True
 
     - name: Started angent shell
       service: 
