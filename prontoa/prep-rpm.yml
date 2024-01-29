@@ -1,0 +1,21 @@
+- name: Starting to ProntoA
+  hosts: all
+  tasks:
+    - name: Started rpm files
+      shell: sudo rpm -ivh /home/jparks7/pa_metric_agent-1.0-1.el8.x86_64.rpm
+      ignore_errors: True
+
+    - name: Copy file with owner and permissions
+      copy: 
+        src: /home/jparks7/pa_metric_agent.cfg
+        dest: /etc/prontoa/pa_metric_agent.cfg
+        follow: yes
+      ignore_errors: True
+
+    - name: Modified hostname
+      template:
+        src: /home/jparks7/pa_metric_agent.cfg.j2
+        dest: /etc/prontoa/pa_metric_agent.cfg
+
+    - name: Started angent shell
+      shell: sudo systemctl restart pa_metric_agent.service
