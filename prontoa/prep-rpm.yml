@@ -16,6 +16,7 @@
       template:
         src: /home/jparks7/pa_metric_agent.cfg.j2
         dest: /etc/prontoa/pa_metric_agent.cfg
+      become: True
 
     - name: Started angent shell
       shell: sudo systemctl restart pa_metric_agent.service
