@@ -8,7 +8,7 @@
     #   become: yes
 
     - name: Copy file with owner and permissions1
-      ansible.builtin.copy: 
+      copy: 
         src: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
         dest: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
         owner: jparks7
