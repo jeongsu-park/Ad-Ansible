@@ -5,13 +5,11 @@
       file:
         path: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
         state: absent
-        follow: yes
 
     - name: Copy file with owner and permissions1
       ansible.builtin.copy: 
         src: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
         dest: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
-        remote_src: yes
 
     - name: Started rpm files
       ansible.builtin.dnf:
