@@ -1,10 +1,11 @@
 - name: Starting to ProntoA
   hosts: all
   tasks:
-    - name: Copy file with owner and permissions
-      file:
-        path: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
-        state: absent
+    #    - name: Copy file with owner and permissions
+    #  file:
+    #    path: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
+    #    state: absent
+    #   become: yes
 
     - name: Copy file with owner and permissions1
       ansible.builtin.copy: 
@@ -12,6 +13,7 @@
         dest: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
         owner: jparks7
         group: jparks7
+      become: yes
 
     - name: Started rpm files
       ansible.builtin.dnf:
