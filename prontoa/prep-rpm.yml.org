@@ -3,17 +3,17 @@
   tasks:
     - name: Copy file with owner and permissions
       file:
-        path: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
+        path: /home/jparks7/pa_metric_agent-1.0-1.el8.x86_64.rpm
         state: absent
         follow: yes
 
     - name: Copy file with owner and permissions
       copy: 
-        src: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
+        src: /home/jparks7/pa_metric_agent-1.0-1.el8.x86_64.rpm
         dest: /home/jparks7
         follow: yes
 
-    - name: Started rpm files
+    - name: Remove the PA_metric_agent
       ansible.builtin.dnf:
         name: pa_metric_agent
         state: absent
@@ -22,7 +22,7 @@
 
     - name: Started rpm files
       ansible.builtin.dnf:
-        name: /home/jparks7/pa_metric_agent-1.0-2.el8.x86_64.rpm
+        name: /home/jparks7/pa_metric_agent-1.0-1.el8.x86_64.rpm
         state: present
         disable_gpg_check: yes
 
@@ -30,10 +30,10 @@
       template:
         src: /home/jparks7/pa_metric_agent.cfg.j2
         dest: /etc/prontoa/pa_metric_agent.cfg
-        force: yes
-          #      become: True
+      become: True
 
     - name: Started angent shell
       service: 
         name: pa_metric_agent
-        state: started
+        #state: started
+        state: stopped
